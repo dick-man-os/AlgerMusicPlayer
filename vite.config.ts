@@ -7,7 +7,7 @@ import { defineConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
 import VueDevTools from 'vite-plugin-vue-devtools';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
   // 项目src
   root: resolve('src/renderer'),
@@ -20,7 +20,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    viteCompression(),
+    ...(mode === 'android' ? [] : [viteCompression()]),
     VueDevTools(),
     AutoImport({
       imports: [
@@ -43,4 +43,4 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {}
   }
-});
+}));

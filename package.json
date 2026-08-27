@@ -16,6 +16,11 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "dev:web": "vite dev",
+    "build:web": "vite build",
+    "build:web:android": "vite build --mode android",
+    "android:copy": "npm run build:web:android && cap copy android",
+    "android:sync": "npm run build:web:android && cap sync android",
+    "android:build:debug": "npm run android:sync && cd android && gradlew.bat assembleDebug",
     "build": "electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "fix-sandbox": "node scripts/fix-sandbox.js",
@@ -35,6 +40,8 @@
     ]
   },
   "dependencies": {
+    "@capacitor/android": "8.4.2",
+    "@capacitor/core": "8.4.2",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
     "@httptoolkit/dbus-native": "^0.1.5",
@@ -61,6 +68,7 @@
     "vue-i18n": "^11.2.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.4.2",
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
     "@electron-toolkit/eslint-config": "^2.1.0",
