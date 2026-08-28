@@ -1,24 +1,24 @@
 <template>
   <div
     class="search-item group cursor-pointer transition-all duration-300"
-    :class="[item.type === 'mv' ? 'flex flex-col' : 'flex flex-col']"
+    :class="[itemType === 'mv' ? 'flex flex-col' : 'flex flex-col']"
     @click="handleClick"
   >
     <!-- Image Container -->
     <div
       class="relative overflow-hidden rounded-2xl shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1"
-      :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
+      :class="[itemType === 'mv' ? 'aspect-video' : 'aspect-square']"
     >
       <n-image
         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        :src="getImgUrl(item.picUrl, item.type === 'mv' ? '400y225' : '400y400')"
+        :src="getImgUrl(item.picUrl, itemType === 'mv' ? '400y225' : '400y400')"
         lazy
         preview-disabled
       />
 
       <!-- Play Overlay (for MV) -->
       <div
-        v-if="item.type === 'mv'"
+        v-if="itemType === 'mv'"
         class="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30"
       >
         <div
@@ -30,7 +30,7 @@
 
       <!-- Item Size Badge (for Album) -->
       <div
-        v-if="item.type === '专辑' && item.size"
+        v-if="itemType === 'album' && item.size"
         class="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/40 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
         <i class="ri-music-2-line" />
@@ -52,7 +52,7 @@
 
     <!-- MV Player Component -->
     <mv-player
-      v-if="item.type === 'mv'"
+      v-if="itemType === 'mv'"
       v-model:show="showPop"
       :current-mv="getCurrentMv()"
       no-list
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
@@ -71,13 +71,16 @@ import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { IMvItem } from '@/types/mv';
 import { getImgUrl } from '@/utils';
 
+type SearchItemType = 'album' | 'playlist' | 'mv' | 'djRadio';
+type SearchItemInputType = SearchItemType | '专辑';
+
 const props = defineProps<{
   item: {
     id: number;
     picUrl: string;
     name: string;
     desc: string;
-    type: string;
+    type: SearchItemInputType;
     [key: string]: any;
   };
 }>();
@@ -87,6 +90,9 @@ const showPop = ref(false);
 const playerStore = usePlayerStore();
 const router = useRouter();
 const playHistoryStore = usePlayHistoryStore();
+const itemType = computed<SearchItemType>(() =>
+  props.item.type === '专辑' ? 'album' : props.item.type
+);
 
 const getCurrentMv = () => {
   return {
@@ -98,7 +104,7 @@ const getCurrentMv = () => {
 };
 
 const handleClick = async () => {
-  if (props.item.type === '专辑') {
+  if (itemType.value === 'album') {
     navigateToMusicList(router, {
       id: props.item.id,
       type: 'album',
@@ -109,7 +115,7 @@ const handleClick = async () => {
       },
       canRemove: false
     });
-  } else if (props.item.type === 'playlist') {
+  } else if (itemType.value === 'playlist') {
     navigateToMusicList(router, {
       id: props.item.id,
       type: 'playlist',
@@ -117,9 +123,9 @@ const handleClick = async () => {
       listInfo: { picUrl: props.item.picUrl },
       canRemove: false
     });
-  } else if (props.item.type === 'mv') {
+  } else if (itemType.value === 'mv') {
     handleShowMv();
-  } else if (props.item.type === 'djRadio') {
+  } else if (itemType.value === 'djRadio') {
     playHistoryStore.addPodcastRadio({
       id: props.item.id,
       name: props.item.name,
