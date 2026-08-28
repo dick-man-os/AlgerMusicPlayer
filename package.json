@@ -34,8 +34,18 @@
     ]
   },
   "dependencies": {
+    "@capacitor-community/safe-area": "8.0.1",
+    "@capacitor/android": "8.5.0",
+    "@capacitor/app": "8.1.1",
+    "@capacitor/background-runner": "3.0.0",
+    "@capacitor/core": "8.5.0",
+    "@capacitor/device": "8.0.3",
+    "@capacitor/keyboard": "8.0.5",
+    "@capacitor/screen-orientation": "8.0.1",
+    "@capacitor/status-bar": "8.0.3",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "@jofr/capacitor-media-session": "4.0.0",
     "@unblockneteasemusic/server": "^0.27.10",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -58,6 +68,7 @@
     "vue-i18n": "^11.2.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.0",
     "@electron-toolkit/eslint-config": "^2.1.0",
     "@electron-toolkit/eslint-config-ts": "^3.1.0",
     "@electron-toolkit/tsconfig": "^1.0.1",

@@ -1,14 +1,26 @@
 <template>
-  <div id="layout-main" class="mobile-layout mobile" :class="{ 'has-safe-area': isPhone }">
+  <div
+    id="layout-main"
+    class="mobile-layout mobile"
+    :class="{
+      'has-safe-area': isPhone,
+      'has-overlay-player': isOverlayRoute && isPlay,
+      'keyboard-visible': isKeyboardVisible
+    }"
+  >
     <!-- 顶部头部 -->
-    <mobile-header />
+    <mobile-header v-if="!isOverlayRoute" />
 
     <!-- 主内容区域 -->
     <div
       class="mobile-content"
-      :class="{ 'has-bottom-menu': shouldShowBottomMenu, 'has-player': isPlay }"
+      :class="{
+        'has-bottom-menu': shouldShowBottomMenu,
+        'has-player': isPlay,
+        'is-overlay-route': isOverlayRoute
+      }"
     >
-      <router-view v-slot="{ Component }" class="mobile-page">
+      <router-view v-slot="{ Component }" :class="{ 'mobile-page': !isOverlayRoute }">
         <keep-alive :include="keepAliveInclude">
           <component :is="Component" />
         </keep-alive>
@@ -29,7 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, provide, ref } from 'vue';
+import { Capacitor, type PluginListenerHandle } from '@capacitor/core';
+import { Keyboard } from '@capacitor/keyboard';
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, provide, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import homeRouter from '@/router/home';
@@ -52,12 +66,48 @@ const props = defineProps<{
 const route = useRoute();
 const playerStore = usePlayerStore();
 const menuStore = useMenuStore();
+const isKeyboardVisible = ref(false);
+const keyboardListenerHandles: PluginListenerHandle[] = [];
+let isUnmounted = false;
+
+const setupKeyboardListeners = async () => {
+  const handles = await Promise.all([
+    Keyboard.addListener('keyboardWillShow', () => (isKeyboardVisible.value = true)),
+    Keyboard.addListener('keyboardDidShow', () => (isKeyboardVisible.value = true)),
+    Keyboard.addListener('keyboardWillHide', () => (isKeyboardVisible.value = false)),
+    Keyboard.addListener('keyboardDidHide', () => (isKeyboardVisible.value = false))
+  ]);
+
+  if (isUnmounted) {
+    await Promise.all(handles.map((handle) => handle.remove()));
+    return;
+  }
+
+  keyboardListenerHandles.push(...handles);
+};
+
+onMounted(() => {
+  if (Capacitor.isNativePlatform()) {
+    void setupKeyboardListeners();
+  }
+});
+
+onBeforeUnmount(() => {
+  isUnmounted = true;
+  isKeyboardVisible.value = false;
+  void Promise.all(keyboardListenerHandles.map((handle) => handle.remove()));
+});
 
 // 提供是否有安全区域
 provide('hasSafeArea', props.isPhone);
 
 // 是否有播放的歌曲
 const isPlay = computed(() => playerStore.playMusic && playerStore.playMusic.id);
+
+// Search routes provide their own full-screen header and are bounded by mobile-content.
+const isOverlayRoute = computed(() =>
+  ['/mobile-search', '/mobile-search-result'].includes(route.path)
+);
 
 // 是否显示底部菜单
 const shouldShowBottomMenu = computed(() => {
@@ -96,14 +146,32 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
 
 <style lang="scss" scoped>
 .mobile-layout {
-  @apply w-screen h-screen flex flex-col;
+  @apply w-screen h-full flex flex-col;
   @apply bg-light dark:bg-black;
   @apply overflow-hidden;
+  --mobile-overlay-bottom: 0px;
+  min-height: 0;
   position: relative;
+
+  &.has-overlay-player {
+    // The mini player is 56px tall and sits 10px above the resized WebView bottom.
+    --mobile-overlay-bottom: calc(66px + var(--safe-area-inset-bottom, 0px));
+  }
+
+  &.has-overlay-player.keyboard-visible {
+    // The WebView is already bounded by the real IME inset; place the player on that edge.
+    --mobile-overlay-bottom: 56px;
+
+    :deep(.mobile-play-bar) {
+      bottom: 0;
+    }
+  }
 }
 
 .mobile-content {
   @apply flex-1 overflow-auto;
+  min-height: 0;
+  position: relative;
 
   // // 只有底部菜单
   // &.has-bottom-menu:not(.has-player) {

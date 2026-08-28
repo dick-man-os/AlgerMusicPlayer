@@ -228,6 +228,30 @@ const performSearch = async (isLoadMore = false) => {
 
       hasMore.value = mvs.length === ITEMS_PER_PAGE;
     }
+    // 电台搜索
+    else if (searchType.value === SEARCH_TYPE.DJ_RADIO) {
+      const { data } = await getSearch({
+        keywords: keyword.value,
+        type: searchType.value,
+        limit: ITEMS_PER_PAGE,
+        offset: (page.value - 1) * ITEMS_PER_PAGE
+      });
+
+      const djRadios = (data.result.djRadios || []).map((item: any) => ({
+        ...item,
+        picUrl: item.picUrl,
+        desc: item.dj?.nickname || '',
+        type: 'djRadio'
+      }));
+
+      if (isLoadMore) {
+        results.value = [...results.value, ...djRadios];
+      } else {
+        results.value = djRadios;
+      }
+
+      hasMore.value = djRadios.length === ITEMS_PER_PAGE;
+    }
 
     page.value++;
   } catch (error) {
@@ -302,9 +326,13 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .mobile-search-result {
-  @apply fixed inset-0;
+  @apply absolute inset-0;
   @apply bg-light dark:bg-black;
   @apply flex flex-col;
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+  bottom: var(--mobile-overlay-bottom, 0px);
 }
 
 .result-header {
@@ -361,6 +389,7 @@ onMounted(() => {
 
 .result-content {
   @apply flex-1 overflow-y-auto;
+  min-height: 0;
 }
 
 .loading-state {

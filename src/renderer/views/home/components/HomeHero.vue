@@ -1,24 +1,26 @@
 <template>
-  <div class="hero-section mb-6 md:mb-10">
+  <div class="hero-section mb-4 md:mb-10">
     <!-- Skeleton Loading -->
-    <div v-if="loading" class="space-y-4">
+    <div v-if="loading" class="space-y-3 md:space-y-4">
       <div class="flex gap-1.5 overflow-hidden md:hidden">
         <div v-for="i in 6" :key="i" class="h-9 w-20 flex-shrink-0 skeleton-shimmer rounded-full" />
       </div>
-      <div class="hero-grid grid gap-3">
-        <div class="skeleton-shimmer rounded-2xl" style="height: 160px" />
-        <div class="skeleton-shimmer rounded-2xl" style="height: 160px" />
+      <div class="hero-grid grid gap-2 md:gap-3">
+        <div class="h-[132px] rounded-2xl skeleton-shimmer md:h-40" />
+        <div class="h-[132px] rounded-2xl skeleton-shimmer md:h-40" />
       </div>
     </div>
 
     <!-- Main Content -->
-    <div v-else class="space-y-4">
+    <div v-else class="space-y-3 md:space-y-4">
       <!-- Quick Navigation (mobile only) -->
-      <nav class="scrollbar-hide flex gap-1.5 overflow-x-auto pb-0.5 md:hidden">
+      <nav
+        class="scrollbar-hide flex gap-1.5 overflow-x-auto overscroll-x-contain pb-0.5 scroll-smooth md:hidden"
+      >
         <button
           v-for="(item, index) in quickNavItems"
           :key="item.key"
-          class="nav-chip flex flex-shrink-0 items-center gap-1.5 rounded-full px-3.5 py-[7px] text-[13px] font-medium transition-all duration-250 hover:text-neutral-900 dark:hover:text-neutral-100"
+          class="nav-chip flex min-h-9 flex-shrink-0 items-center gap-1.5 rounded-full px-3.5 py-[7px] text-[13px] font-medium transition-all duration-250 hover:text-neutral-900 dark:hover:text-neutral-100"
           :class="[
             item.active
               ? 'bg-primary text-white'
@@ -34,7 +36,7 @@
       </nav>
 
       <!-- Hero Cards -->
-      <div class="hero-grid grid gap-3">
+      <div class="hero-grid grid gap-2 md:gap-3">
         <!-- ===== 每日推荐 (Left - Large Card) ===== -->
         <div class="hero-card" :style="{ animationDelay: '0.12s' }">
           <!-- Card -->
@@ -57,10 +59,10 @@
             <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
 
             <!-- Content -->
-            <div class="relative flex h-full flex-col justify-between p-5 md:p-6">
+            <div class="relative flex h-full flex-col justify-between p-4 md:p-6">
               <!-- Top: Title + Badge -->
               <div>
-                <h3 class="text-2xl font-black leading-tight tracking-wider text-white md:text-3xl">
+                <h3 class="text-xl font-black leading-tight tracking-wider text-white md:text-3xl">
                   {{ t('comp.homeHero.dailyRecommend') }}
                 </h3>
                 <span
@@ -94,7 +96,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-white active:scale-95"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-white active:scale-95 md:h-11 md:w-11"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -125,7 +127,7 @@
             <div class="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
 
             <!-- Content -->
-            <div class="relative flex h-full items-center gap-4 p-5">
+            <div class="fm-card-content relative flex h-full items-center gap-4 p-5">
               <!-- Album Cover -->
               <div
                 class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-xl shadow-lg transition-transform duration-500 group-hover:scale-[1.03]"
@@ -151,7 +153,9 @@
               </div>
 
               <!-- Song Info & Controls -->
-              <div class="flex min-w-0 flex-1 flex-col justify-between self-stretch py-0.5">
+              <div
+                class="fm-details flex min-w-0 flex-1 flex-col justify-between self-stretch py-0.5"
+              >
                 <div class="min-w-0">
                   <h3 class="truncate text-base font-bold text-white md:text-lg">
                     {{ fmCurrentSong?.name || t('comp.homeHero.discoverMusic') }}
@@ -162,7 +166,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                   <!-- Playback Controls -->
-                  <div class="flex items-center gap-3">
+                  <div class="fm-controls flex items-center gap-3">
                     <button
                       class="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:text-white"
                       :title="t('comp.homeHero.fmTrash')"
@@ -189,7 +193,9 @@
                   </div>
 
                   <!-- FM Badge -->
-                  <span class="flex items-center gap-1 text-xs font-semibold text-white/50">
+                  <span
+                    class="fm-badge flex items-center gap-1 text-xs font-semibold text-white/50"
+                  >
                     <i class="ri-radio-fill" />
                     {{ t('comp.homeHero.personalFm') }}
                   </span>
@@ -237,24 +243,26 @@
             <!-- Overlay -->
             <div class="absolute inset-0 bg-black/30 transition-colors group-hover:bg-black/40" />
             <!-- Content -->
-            <div class="relative flex h-full flex-col justify-between p-5">
+            <div class="featured-card-content relative flex h-full flex-col justify-between p-5">
               <span
-                class="inline-flex w-fit items-center gap-1 rounded-md bg-black/30 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm"
+                class="featured-badge inline-flex w-fit items-center gap-1 rounded-md bg-black/30 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm"
               >
                 <i class="ri-play-list-2-line" />
                 {{ t('comp.homeHero.hotPlaylists') }}
               </span>
               <div class="flex items-end justify-between gap-4">
-                <div>
-                  <h3 class="text-lg font-bold text-white">
+                <div class="featured-copy min-w-0">
+                  <h3
+                    class="whitespace-nowrap text-sm font-bold leading-tight text-white md:text-lg"
+                  >
                     {{ t('comp.homeHero.hotPlaylists') }}
                   </h3>
-                  <p class="mt-0.5 text-sm text-white/70">
+                  <p class="featured-subtitle mt-0.5 text-sm text-white/70">
                     {{ t('comp.homeHero.discoverNewReleases') }}
                   </p>
                 </div>
                 <div
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-white/30"
+                  class="featured-action flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-white/30"
                 >
                   <i class="ri-arrow-right-s-line text-xl" />
                 </div>
@@ -556,7 +564,7 @@ const fetchHeroData = async () => {
     promises.push(
       getPersonalizedPlaylist(8)
         .then((res: any) => {
-          const list = res.result || res.data;
+          const list = res.data?.result || [];
           if (list && !isLoggedIn.value) hotPlaylists.value = list;
         })
         .catch(() => {})
@@ -661,9 +669,9 @@ onActivated(() => {
   }
 }
 
-/* Hero grid — left wider, right narrower, equal row height */
+/* Compact asymmetric pair on mobile; keep enough width for four Chinese title glyphs. */
 .hero-grid {
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: minmax(0, 3fr) minmax(124px, 2fr);
 }
 
 /* Cards fill grid row height equally */
@@ -673,8 +681,89 @@ onActivated(() => {
 .hero-grid > .hero-card > .daily-card,
 .hero-grid > .hero-card > .fm-card {
   height: 100%;
-  min-height: 140px;
-  max-height: 180px;
+  min-height: 132px;
+  max-height: 132px;
+}
+
+.fm-card-content {
+  align-items: stretch;
+  gap: 0;
+  padding: 0.625rem;
+}
+
+.fm-card-content .fm-cover {
+  display: none;
+}
+
+.fm-details {
+  padding: 0;
+}
+
+.fm-controls {
+  width: 100%;
+  justify-content: space-between;
+  gap: 0;
+}
+
+.fm-badge,
+.featured-subtitle,
+.featured-action {
+  display: none;
+}
+
+.featured-card-content {
+  padding: 0.625rem;
+}
+
+.featured-badge {
+  padding-left: 0.375rem;
+  padding-right: 0.375rem;
+  font-size: 10px;
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 3fr 2fr;
+  }
+
+  .hero-grid > .hero-card > .daily-card,
+  .hero-grid > .hero-card > .fm-card {
+    min-height: 140px;
+    max-height: 180px;
+  }
+
+  .fm-card-content {
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .fm-card-content .fm-cover {
+    display: block;
+  }
+
+  .fm-details {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+  }
+
+  .fm-controls {
+    width: auto;
+    gap: 0.75rem;
+  }
+
+  .fm-badge,
+  .featured-action {
+    display: flex;
+  }
+
+  .featured-card-content {
+    padding: 1.25rem;
+  }
+
+  .featured-subtitle {
+    display: block;
+  }
 }
 
 /* Card animation */

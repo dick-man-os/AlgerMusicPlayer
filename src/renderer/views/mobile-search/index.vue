@@ -256,9 +256,13 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .mobile-search-page {
-  @apply fixed inset-0 z-50;
+  @apply absolute inset-0 z-50;
   @apply bg-light dark:bg-black;
   @apply flex flex-col;
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+  bottom: var(--mobile-overlay-bottom, 0px);
 }
 
 .search-header {
@@ -321,6 +325,8 @@ onMounted(() => {
 
 .search-content {
   @apply flex-1 overflow-y-auto px-4 py-3;
+  min-height: 0;
+  overscroll-behavior: contain;
 }
 
 .search-section {

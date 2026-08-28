@@ -66,13 +66,13 @@ const openSettings = () => {
 
 <style lang="scss" scoped>
 .mobile-header {
-  @apply flex items-center justify-between px-4 py-3;
+  @apply flex items-center justify-between px-4 py-2;
   @apply bg-light dark:bg-black;
   @apply border-b border-gray-100 dark:border-gray-800;
   min-height: 56px;
 
   &.safe-area-top {
-    padding-top: calc(var(--safe-area-inset-top, 0px) + 16px);
+    padding-top: calc(var(--safe-area-inset-top, 0px) + 8px);
   }
 }
 
